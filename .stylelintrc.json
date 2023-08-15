@@ -1,0 +1,7 @@
+{
+  "extends": ["stylelint-config-standard"],
+  "scripts": {
+    "lint:styles": "stylelint src/styles/**/*.css",
+    "lint:styles:fix": "stylelint --fix src/styles/**/*.css"
+  }
+}
