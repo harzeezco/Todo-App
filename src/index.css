@@ -216,3 +216,19 @@ body {
   margin-top: 3rem;
   padding-bottom: 2rem;
 }
+
+.submit-btn {
+  width: fit-content;
+  background-color: var(--bright-blue);
+  padding: 3px 1.5rem;
+  color: var(--color-white);
+  border-radius: var(--small-border-radius);
+  font-weight: var(--font-wt-semi-bold);
+  cursor: pointer;
+}
+
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+}

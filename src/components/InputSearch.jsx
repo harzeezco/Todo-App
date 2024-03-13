@@ -1,22 +1,23 @@
 import PropTypes from "prop-types";
 
-const InputSearch = ({ value, setValue }) => {
+const InputSearch = ({ todo, onInputChange }) => {
 
   
   return (
     <input
-      value={value}
+      value={todo}
       className="input"
       placeholder="Create a new todo..."
       type="text"
-      onChange={(e) => setValue(e.target.value)}
+      name='todo'
+      onChange={(e) => onInputChange(e)}
     />
   );
 };
 
 InputSearch.propTypes = {
-  value: PropTypes.string,
-  setValue: PropTypes.func,
+  todo: PropTypes.string,
+  onInputChange: PropTypes.func,
 };
 
 export default InputSearch;

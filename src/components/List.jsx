@@ -1,32 +1,42 @@
 import CheckBox from "./CheckBox";
+import { FaEdit } from "react-icons/fa";
 
 import PropTypes from "prop-types";
 
 const List = ({
-  list: { isChecked, id, value },
-  onToggleListItem,
-  onToggleItem,
+  list: { isCompleted, todo, _id },
+  onToggleDelete,
+  onToggleEdit,
+  onToggleCompleted
 }) => {
+
   return (
-    <li className="list" key={id}>
-      <div className={`flex  ${isChecked && "completed"} small-gap`}>
+    <li className="list" key={_id}>
+      <div className={`flex  ${isCompleted && "completed"} small-gap`}>
         <CheckBox
           active="active"
-          onToggleListItem={onToggleListItem}
-          isChecked={isChecked}
+          onToggleCompleted={onToggleCompleted}
+          isCompleted={isCompleted}
         />
-        <p>{value}</p>
+        <p>{todo}</p>
       </div>
-      <span className="cursor" onClick={onToggleItem}>
+      <div className="flex small-gap">
+        <button className="cursor" onClick={onToggleDelete}>
         X
-      </span>
+      </button>
+      <button onClick={onToggleEdit}>
+        <FaEdit />
+      </button>
+      </div>
     </li>
   );
 };
 
 List.propTypes = {
   list: PropTypes.object,
-  onToggleListItem: PropTypes.func,
+  onToggleEdit: PropTypes.func,
+  onToggleCompleted: PropTypes.func,
+  onToggleDelete: PropTypes.func,
   onToggleItem: PropTypes.func,
 };
 

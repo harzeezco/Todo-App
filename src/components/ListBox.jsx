@@ -1,81 +1,85 @@
-// import React from "react";
-import { memo, useState } from "react";
-import ListFooter from "./ListFooter";
-
+import { useCallback, useEffect, useState } from "react";
 import PropTypes from "prop-types";
+import axios from "axios";
 import List from "./List";
+import { toast } from "react-toastify";
+import { SERVERURL } from "../App";
 
-const ListBox = memo(({ lists, setLists }) => {
-  const [sortBy, setSortBy] = useState("All");
+const ListBox = ({refresh, setLists, setUpdate, setUpdateID, setRefresh}) => {
+  const [todosList, setTodoList] = useState([]);
 
-  const handletoggleItem = (id) => {
-    setLists((prevList) =>
-      prevList.map((list) => {
-        return list.id === id ? { ...list, isChecked: !list.isChecked } : list;
-      })
-    );
-  };
+  let sortBy;
 
-  const handeleteitem = (id) => {
-    setLists((prevList) => prevList.filter((list) => list.id !== id));
-  };
+  const fetchData = useCallback(async () => {
+    try {
+      const res = await axios.get(`${SERVERURL}/api/todos`);
+      const { data } = res.data;
+      setTodoList([...data.todos].reverse());
+    } catch (error) {
+      toast.error(error.message);
+    }
+  }, [refresh]);
 
-  const handleClearCompletedItem = () => {
-    setLists((prevList) =>
-      prevList.filter((list) => {
-        return list.isChecked ? null : list;
-      })
-    );
-  };
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
-  let sortedItem;
+  const handleDelete = async (_id) => {
+    try {
+    await axios.delete(`${SERVERURL}/api/todos/${_id}`)
+      .catch(error => toast.error(error.message))
+    setTodoList(todosList.filter((list) => list._id !== _id));
+    toast.success('Todo deleted successfully')
+    } catch (error) {
+      toast.error(error.message)
+    }
+  }
 
-  if (sortBy === "All") sortedItem = lists;
+  const handleEdit = async (_id, todo) => {
+    setLists((prev) => ({ ...prev, todo }));
+    setUpdate(true)
+    setUpdateID(_id)
+  }
 
-  if (sortBy === "Completed")
-    sortedItem = lists
-      .slice()
-      .sort((a, b) => Number(b.isChecked) - Number(a.isChecked));
+  const handleCompleted = async (id) => {
+    try {
+      await axios.patch(`${SERVERURL}/api/todos/${id}`, { isCompleted: true })
+      toast.success('Todo Completed successfully')
+      setRefresh((prev) => !prev);
+    } catch (error) {
+      toast.error(error.message)
+    }
+  }
 
-  if (sortBy === "Active")
-    sortedItem = lists
-      .slice()
-      .sort((a, b) => Number(!b.isChecked) - Number(!a.isChecked));
-
-  const listNum = lists && lists.length;
-
+  sortBy = todosList;
+  
   return (
     <div className="items-box">
       <ul>
-        {sortedItem.map((list) => {
-          const { id } = list;
-
+        {sortBy.map((list) => {
           return (
             <List
-              key={id}
+              key={list._id}
               list={list}
-              onToggleListItem={() => handletoggleItem(id)}
-              onToggleItem={() => handeleteitem(id)}
+              onToggleEdit={() => handleEdit(list._id, list.todo)}
+              onToggleDelete={() => handleDelete(list._id)}
+              onToggleCompleted={() => handleCompleted(list._id)}
             />
           );
         })}
       </ul>
-
-      <ListFooter
-        listNum={listNum}
-        onToggleCompletedItem={handleClearCompletedItem}
-        setSortBy={setSortBy}
-        sortBy={sortBy}
-      />
     </div>
   );
-});
+};
 
-ListBox.displayName = "ListBox";
 
 ListBox.propTypes = {
-  lists: PropTypes.array,
+  setRefresh: PropTypes.func,
+  setUpdateID: PropTypes.func,
+  setUpdate: PropTypes.func,
   setLists: PropTypes.func,
+  refresh: PropTypes.bool,
+  lists: PropTypes.array,
 };
 
 export default ListBox;

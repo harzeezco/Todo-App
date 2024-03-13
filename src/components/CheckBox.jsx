@@ -2,31 +2,30 @@ import Proptypes from "prop-types";
 
 const CheckBox = ({
   absolute,
-  onToggleItem,
-  setValue,
+  onToggleSubmit,
   value,
-  onToggleListItem,
-  isChecked,
+  isCompleted,
+  onToggleCompleted,
 }) => {
   const handleInput = () => {
-    if (onToggleItem != null) {
-      onToggleItem();
-      setValue("");
+    if (onToggleSubmit != null) {
+      onToggleSubmit();
     }
 
-    if (onToggleListItem) {
-      onToggleListItem();
+    if (onToggleCompleted != null) {
+      onToggleCompleted();
     }
+
   };
 
   return (
     <div
       className={`check-box flex-center cursor ${absolute && "absolute"} ${
-        value || isChecked ? "active" : ""
+        value || isCompleted ? "active" : ""
       }`}
       onClick={handleInput}
     >
-      {value || isChecked ? (
+      {value || isCompleted ? (
         <ion-icon name="checkmark-outline"></ion-icon>
       ) : null}
     </div>
@@ -35,11 +34,12 @@ const CheckBox = ({
 
 CheckBox.propTypes = {
   absolute: Proptypes.string,
-  onToggleItem: Proptypes.func,
+  isCompleted: Proptypes.bool,
+  onToggleSubmit: Proptypes.func,
   setValue: Proptypes.func,
-  onToggleListItem: Proptypes.func,
   value: Proptypes.string,
   isChecked: Proptypes.bool,
+  onToggleCompleted: Proptypes.func,
 };
 
 export default CheckBox;
